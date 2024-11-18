@@ -215,6 +215,10 @@ class AttentionLayer(Module):
         k = self.prenorm_k(k.reshape((batch_size, keys_values_len * k_dim))) 
         v = self.prenorm_v(v.reshape((batch_size, keys_values_len * v_dim))) 
         
+        q = q.reshape((batch_size, queries_len, q_dim)).reshape((batch_size * queries_len, q_dim)) 
+        k = k.reshape((batch_size, keys_values_len, k_dim)).reshape((batch_size * keys_values_len, k_dim)) 
+        v = v.reshape((batch_size, keys_values_len, v_dim)).reshape((batch_size * keys_values_len, v_dim)) 
+        
         q = self.q_projection(q) 
         k = self.k_projection(k) 
         v = self.v_projection(v) 
