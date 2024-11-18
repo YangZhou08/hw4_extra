@@ -69,3 +69,25 @@ def ones_like(array, *, device=None, requires_grad=False):
     return ones(
         *array.shape, dtype=array.dtype, device=device, requires_grad=requires_grad
     )
+
+def arange(start, stop=None, step=1, device=None, dtype="float32", requires_grad=False):
+    """
+    Generate values in the range [start, stop) with the given step size.
+    If stop is None, the range is [0, start).
+    """
+    device = ndl.cpu() if device is None else device
+    
+    # Handle the case where only stop is provided (like np.arange(stop))
+    if stop is None:
+        start, stop = 0, start
+
+    # Calculate the length of the range
+    num_elements = math.ceil((stop - start) / step)
+
+    # Create the range values
+    # array = device.arange(start, stop, step, dtype=dtype) 
+    array = device.full((num_elements,), 0, dtype=dtype)
+    for idx in range(num_elements):
+        array[idx] = start + idx * step
+
+    return ndl.Tensor(array, device=device, dtype=dtype, requires_grad=requires_grad) 
