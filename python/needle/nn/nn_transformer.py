@@ -282,7 +282,7 @@ class TransformerLayer(Module):
 
         ### BEGIN YOUR SOLUTION
         x = x + self.dropout(self.attn(x)) 
-        x = x + self.dropout(self.fc2(self.dropout(self.relu(self.fc1(self.norm1(x.reshape((batch_size * seq_len, x_dim))).reshape((batch_size, seq_len, x_dim))))))) 
+        x = x + self.dropout(self.fc2(self.dropout(self.relu(self.fc1(self.norm1(x.reshape((batch_size * seq_len, x_dim))).reshape((batch_size, seq_len, x_dim).reshape((batch_size * seq_len, x_dim)))))))) 
         ### END YOUR SOLUTION
 
         return x
