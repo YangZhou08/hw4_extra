@@ -14,7 +14,7 @@ from .nn_basic import (
     Linear,
     Sequential
 )
-
+import math 
 
 class MultiHeadAttention(Module):
     """
@@ -108,7 +108,13 @@ class MultiHeadAttention(Module):
         probs = None
 
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        product = self.matmul(q, k.transpose((0, 1, 3, 2))) / math.sqrt(q_dim) 
+        if self.causal: 
+            mask = self.create_causal_mask(queries_len, keys_values_len, self.device) 
+            product = product + mask 
+        probs = self.softmax(product) # (batch_size, num_head, queries_len, keys_values_len) 
+        probs = self.dropout(probs) 
+        result = self.matmul(probs, v) 
         ### END YOUR SOLUTION
 
         return result, probs
