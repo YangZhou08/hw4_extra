@@ -262,8 +262,8 @@ class TransformerLayer(Module):
         ### BEGIN YOUR SOLUTION
         self.attn = AttentionLayer(q_features, num_head, dim_head, device = device, dtype = dtype, causal = causal) 
         self.norm1 = LayerNorm1d(q_features, device = device, dtype = dtype) 
-        self.fc1 = Linear(q_features, hidden_size, device = device, dtype = dtype) 
-        self.fc2 = Linear(hidden_size, q_features, device = device, dtype = dtype) 
+        self.fc1 = Linear(q_features, hidden_size, device = device, dtype = dtype, bias = True) 
+        self.fc2 = Linear(hidden_size, q_features, device = device, dtype = dtype, bias = True) 
         self.dropout = Dropout(dropout) 
         self.relu = ReLU() 
         ### END YOUR SOLUTION
