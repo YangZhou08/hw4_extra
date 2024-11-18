@@ -341,6 +341,7 @@ class Transformer(Module):
 
         ### BEGIN YOUR SOLUTION 
         # x = x.transpose() 
+        print("x shape {} h shape {}".format(x.shape, h.shape)) 
         x = self.embedding(x) 
         print("x shape {} pos shape {}".format(x.shape, self.pos_embedding)) 
         x = x + self.pos_embedding.reshape((1, x.shape[1], 1)).broadcast_to(x.shape) 
