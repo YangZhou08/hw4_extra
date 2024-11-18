@@ -105,10 +105,13 @@ class Linear(Module):
         ### BEGIN YOUR SOLUTION
         intermediates = ops.matmul(X, self.weight) 
         # print(self.bias.shape) 
-        biasbroadcast = ops.broadcast_to(self.bias, intermediates.shape) 
-        # print(biasbroadcast.shape) 
-        # print("linear output {}".format((intermediates + biasbroadcast).dtype)) 
-        return intermediates + biasbroadcast 
+        if self.bias != None: 
+            biasbroadcast = ops.broadcast_to(self.bias, intermediates.shape) 
+            # print(biasbroadcast.shape) 
+            # print("linear output {}".format((intermediates + biasbroadcast).dtype)) 
+            return intermediates + biasbroadcast 
+        else: 
+            return intermediates 
         ### END YOUR SOLUTION
 
 
