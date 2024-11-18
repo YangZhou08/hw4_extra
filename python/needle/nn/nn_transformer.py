@@ -339,7 +339,8 @@ class Transformer(Module):
         if not self.batch_first:
             x = ops.transpose(x, axes=(0, 1))
 
-        ### BEGIN YOUR SOLUTION
+        ### BEGIN YOUR SOLUTION 
+        x = x.transpose() 
         x = self.embedding(x) 
         x = x + self.pos_embedding.reshape((1, x.shape[1], 1)).broadcast_to(x.shape) 
         for layer in self.transformerlayers: 
