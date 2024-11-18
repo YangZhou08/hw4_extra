@@ -260,7 +260,12 @@ class TransformerLayer(Module):
         self.dtype = dtype
 
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        self.attn = AttentionLayer(q_features, num_head, dim_head, device = device, dtype = dtype) 
+        self.norm1 = LayerNorm1d(q_features, device = device, dtype = dtype) 
+        self.fc1 = Linear(q_features, hidden_size, device = device, dtype = dtype) 
+        self.fc2 = Linear(hidden_size, q_features, device = device, dtype = dtype) 
+        self.dropout = Dropout(dropout) 
+        self.relu = ReLU() 
         ### END YOUR SOLUTION
 
     def forward(
@@ -276,7 +281,8 @@ class TransformerLayer(Module):
         batch_size, seq_len, x_dim = x.shape
 
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        x = x + self.dropout(self.attn(x)) 
+        x = x + self.dropout(self.fc2(self.dropout(self.relu(self.fc1(self.norm1(x)))))) 
         ### END YOUR SOLUTION
 
         return x
