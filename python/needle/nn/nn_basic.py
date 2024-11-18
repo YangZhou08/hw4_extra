@@ -177,7 +177,15 @@ class Dropout(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        if self.training: 
+            self.p = np.float32(self.p) 
+            mask = init.randb(*x.shape, p = (1 - self.p), device = x.device, dtype = "float32") 
+            mask = mask / (1 - self.p) 
+            output = x * mask 
+            # print("dropout output {}".format(output.dtype)) 
+            return output 
+        else: 
+            return x 
         ### END YOUR SOLUTION
 
 
