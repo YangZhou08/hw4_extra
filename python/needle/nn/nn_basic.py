@@ -190,12 +190,12 @@ class LayerNorm1d(Module):
         variance = ops.summation(ops.power_scalar(x - mean, 2), axes = (1,)) / (x.shape[1]) 
         # power = init.ones_like(variance, device = variance.device) * 0.5 
         std = ops.power_scalar(variance + self.eps, 0.5) 
-        std = ops.broadcast_to(ops.reshape(std, (x.shape[0], 1)), x.shape) 
+        std = ops.broadcast_to(std.reshape((x.shape[0], 1)), x.shape) 
         intermediates = (x - mean) / std 
         # print(variance.shape) 
         # intermediates = (x - mean) / ops.power(variance + self.eps, 0.5) 
         # print(intermediates.shape) 
-        intermediates = intermediates * ops.broadcast_to(self.weight, intermediates.shape) + ops.broadcast_to(self.bias, intermediates.shape) 
+        intermediates = intermediates * ops.broadcast_to(self.weight.reshape((1, x.shape[1])), intermediates.shape) + ops.broadcast_to(self.bias.reshape((1, x.shape[1])), intermediates.shape) 
         return intermediates 
         ### END YOUR SOLUTION
 
