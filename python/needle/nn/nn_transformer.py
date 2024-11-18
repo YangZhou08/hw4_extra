@@ -227,7 +227,7 @@ class AttentionLayer(Module):
         k = k.reshape((batch_size, keys_values_len, self.num_head, self.dim_head)).transpose((1, 2)) 
         v = v.reshape((batch_size, keys_values_len, self.num_head, self.dim_head)).transpose((1, 2)) 
         
-        x = self.attn(q, k, v) 
+        x, _ = self.attn(q, k, v) 
         
         x = x.transpose((1, 2)).reshape((batch_size, queries_len, self.num_head * self.dim_head)) 
         
