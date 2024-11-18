@@ -114,6 +114,9 @@ class MultiHeadAttention(Module):
             product = product + mask 
         probs = self.softmax(product) # (batch_size, num_head, queries_len, keys_values_len) 
         probs = self.dropout(probs) 
+        
+        print("probs shape {} v shape {}".format(probs.shape, v.shape)) 
+        
         result = self.matmul(probs, v) 
         ### END YOUR SOLUTION
 
