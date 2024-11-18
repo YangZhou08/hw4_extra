@@ -287,12 +287,12 @@ class TransformerLayer(Module):
         x = self.norm1(x.reshape((batch_size * seq_len, x_dim))).reshape((batch_size, seq_len, x_dim)) 
         x = x.reshape((batch_size * seq_len, x_dim)) 
         x = self.fc1(x) 
-        x = x.reshape((batch_size, seq_len, x_dim)) 
+        x = x.reshape((batch_size, seq_len, x.shape[-1])) 
         x = self.relu(x) 
         x = self.dropout(x) 
         x = x.reshape((batch_size * seq_len, x.shape[-1])) 
         x = self.fc2(x) 
-        x = x.reshape((batch_size, seq_len, x_dim)) 
+        x = x.reshape((batch_size, seq_len, x.shape[-1])) 
         x = output + self.dropout(x) 
         ### END YOUR SOLUTION
 
