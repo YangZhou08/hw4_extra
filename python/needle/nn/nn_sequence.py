@@ -230,6 +230,6 @@ class Embedding(Module):
         onehot = init.one_hot(self.num_embeddings, x, dtype = x.dtype, device = x.device) 
         # return ops.matmul(onehot, self.weight) 
         onehot = onehot.reshape((onehot.shape[0] * onehot.shape[1], onehot.shape[2])) 
-        output = ops.matmul(onehot, self.weight) 
+        output = ops.matmul(onehot, self.weight.transpose()) 
         return output.reshape((x.shape[0], x.shape[1], self.embedding_dim)) 
         ### END YOUR SOLUTION
