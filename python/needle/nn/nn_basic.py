@@ -211,8 +211,9 @@ class Dropout(Module):
     def forward(self, x: Tensor) -> Tensor:
         ### BEGIN YOUR SOLUTION
         if self.training: 
-            self.p = np.float32(self.p) 
-            mask = init.randb(*x.shape, p = (1 - self.p), device = x.device, dtype = "float32") 
+            # self.p = np.float32(self.p) 
+            # mask = init.randb(*x.shape, p = (1 - self.p), device = x.device, dtype = "float32") 
+            mask = init.randb(*x.shape, p = (1 - self.p), device = x.device, dtype = x.dtype) 
             mask = mask / (1 - self.p) 
             output = x * mask 
             # print("dropout output {}".format(output.dtype)) 
