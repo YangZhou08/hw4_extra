@@ -381,7 +381,30 @@ def compute_gradient_of_variables(output_tensor, out_grad):
     reverse_topo_order = list(reversed(find_topo_sort([output_tensor])))
 
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
+    # a map from node to a list of gradient contributions from each output node
+    node_to_output_grads_list: Dict[Tensor, List[Tensor]] = {}
+    # Special note on initializing gradient of
+    # We are really taking a derivative of the scalar reduce_sum(output_node)
+    # instead of the vector output_node. But this is the common case for loss function.
+    node_to_output_grads_list[output_tensor] = [out_grad]
+
+    # Traverse graph in reverse topological order given the output_node that we are taking gradient wrt.
+    reverse_topo_order = list(reversed(find_topo_sort([output_tensor])))
+
+    ### BEGIN YOUR SOLUTION
+    # first, we construct the full node_to_output_grads_list 
+    for node in reverse_topo_order: 
+        adjoint = sum_node_list(node_to_output_grads_list[node]) 
+        node.grad = adjoint 
+        
+        if node.op != None: 
+            partialadjoints = node.op.gradient_as_tuple(adjoint, node) 
+            for i, input_node in enumerate(node.inputs): 
+                partial_adjoint_i = partialadjoints[i] 
+                if input_node not in node_to_output_grads_list.keys(): 
+                    node_to_output_grads_list[input_node] = [partial_adjoint_i] 
+                else: 
+                    node_to_output_grads_list[input_node].append(partial_adjoint_i) 
     ### END YOUR SOLUTION
 
 
@@ -394,14 +417,28 @@ def find_topo_sort(node_list: List[Value]) -> List[Value]:
     sort.
     """
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
+    visited = set() 
+    topo_order = [] 
+    for node in node_list: 
+        topo_sort_dfs(node, visited, topo_order) 
+    return topo_order 
     ### END YOUR SOLUTION
 
 
 def topo_sort_dfs(node, visited, topo_order):
     """Post-order DFS"""
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
+    if node in visited: 
+        return 
+    
+    visited.add(node) 
+    
+    # if len(node.inputs) == 0: # leaf node 
+    for input_node in node.inputs: 
+        topo_sort_dfs(input_node, visited, topo_order) 
+    
+    # post-order 
+    topo_order.append(node) 
     ### END YOUR SOLUTION
 
 

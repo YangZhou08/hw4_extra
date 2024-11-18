@@ -11,12 +11,45 @@ class ResNet9(ndl.nn.Module):
     def __init__(self, device=None, dtype="float32"):
         super().__init__()
         ### BEGIN YOUR SOLUTION ###
-        raise NotImplementedError() ###
+         ###
+        # raise NotImplementedError() ### 
+        self.conv1 = nn.ConvBN(3, 16, 7, 4, device = device, dtype = dtype) 
+        self.conv2 = nn.ConvBN(16, 32, 3, 2, device = device, dtype = dtype) 
+        self.conv3 = nn.ConvBN(32, 32, 3, 1, device = device, dtype = dtype) 
+        self.conv4 = nn.ConvBN(32, 32, 3, 1, device = device, dtype = dtype) 
+        # self.conv6 = ConvBN(32, 64, 3, 2) 
+        self.conv5 = nn.ConvBN(32, 64, 3, 2, device = device, dtype = dtype) 
+        # self.conv7 = ConvBN(64, 128, 3, 2) 
+        self.conv6 = nn.ConvBN(64, 128, 3, 2, device = device, dtype = dtype) 
+        # self.conv8 = ConvBN(128, 128, 3, 1) 
+        self.conv7 = nn.ConvBN(128, 128, 3, 1, device = device, dtype = dtype) 
+        # self.conv9 = ConvBN(128, 128, 3, 1) 
+        self.conv8 = nn.ConvBN(128, 128, 3, 1, device = device, dtype = dtype) 
+        self.fc = nn.Linear(128, 128, device = device, dtype = dtype) 
+        self.relu = nn.ReLU() 
+        self.en = nn.Linear(128, 10, device = device, dtype = dtype) 
         ### END YOUR SOLUTION
 
     def forward(self, x):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        x = self.conv1(x) 
+        x = self.conv2(x) 
+        output = self.conv3(x) 
+        output = self.conv4(output) 
+        output += x 
+        x = output 
+        x = self.conv5(x) 
+        x = self.conv6(x) 
+        output = self.conv7(x) 
+        output = self.conv8(output) 
+        output += x 
+        x = output 
+        x = x.reshape((x.shape[0], 128)) 
+        x = self.fc(x) 
+        x = self.relu(x) 
+        x = self.en(x) 
+        
+        return x 
         ### END YOUR SOLUTION
 
 
@@ -35,7 +68,12 @@ class LanguageModel(nn.Module):
         """
         super(LanguageModel, self).__init__()
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        self.embedding = nn.Embedding(output_size, embedding_size, device = device, dtype = dtype) 
+        if seq_model == 'rnn': 
+            self.seq_model = nn.RNN(embedding_size, hidden_size, num_layers, device = device, dtype = dtype) 
+        else: 
+            self.seq_model = nn.LSTM(embedding_size, hidden_size, num_layers, device = device, dtype = dtype) 
+        self.fc = nn.Linear(hidden_size, output_size, device = device, dtype = dtype) 
         ### END YOUR SOLUTION
 
     def forward(self, x, h=None):
@@ -52,7 +90,11 @@ class LanguageModel(nn.Module):
             else h is tuple of (h0, c0), each of shape (num_layers, bs, hidden_size)
         """
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        x = self.embedding(x) 
+        out, h = self.seq_model(x, h) 
+        out = out.reshape((out.shape[0] * out.shape[1], out.shape[2])) 
+        out = self.fc(out) 
+        return out, h 
         ### END YOUR SOLUTION
 
 

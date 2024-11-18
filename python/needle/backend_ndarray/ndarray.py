@@ -247,7 +247,8 @@ class NDArray:
         """
 
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        out = NDArray.make(new_shape, device = self.device, handle = self._handle, offset = self._offset) 
+        return out 
         ### END YOUR SOLUTION
 
     def permute(self, new_axes):
@@ -272,7 +273,15 @@ class NDArray:
         """
 
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        stride = self._strides 
+        new_stride = [stride[i] for i in new_axes] 
+        new_stride = tuple(new_stride) 
+        shape = self._shape 
+        new_shape = [shape[i] for i in new_axes] 
+        new_shape = tuple(new_shape) 
+        out = NDArray.make(new_shape, strides = new_stride, device = self.device, handle = self._handle, offset = self._offset) 
+        
+        return out 
         ### END YOUR SOLUTION
 
     def broadcast_to(self, new_shape):
@@ -296,7 +305,17 @@ class NDArray:
         """
 
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        assert len(new_shape) == len(self._shape) 
+        new_stride = self._strides 
+        new_stride = list(new_stride) 
+        for i in range(len(new_shape)): 
+            if new_shape[i] != self.shape[i]: 
+                assert self.shape[i] == 1 
+                new_stride[i] = 0 
+        new_stride = tuple(new_stride) 
+        out = NDArray.make(new_shape, device = self.device, handle = self._handle, offset = self._offset, strides = new_stride) # the strides are the same as the original array, because the broadcasted dimension still use stride 0 
+        
+        return out 
         ### END YOUR SOLUTION
 
     ### Get and set elements
@@ -363,7 +382,26 @@ class NDArray:
         assert len(idxs) == self.ndim, "Need indexes equal to number of dimensions"
 
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        new_shape = [] 
+        for i, s in enumerate(idxs): 
+            # if s.step == 1: 
+            #     new_shape.append(s.stop - s.start) 
+            # else: 
+            #     new_shape.append((s.stop - s.start + s.step - 1) // s.step) 
+            new_shape.append((s.stop - s.start + s.step - 1) // s.step) 
+        new_shape = tuple(new_shape) 
+        
+        new_offset = self._offset 
+        for i, s in enumerate(idxs): 
+            new_offset += s.start * self._strides[i] 
+        
+        new_stride = [] 
+        for i in range(self.ndim): 
+            new_stride.append(self._strides[i] * idxs[i].step) 
+        new_stride = tuple(new_stride) 
+        
+        out = NDArray.make(new_shape, device = self.device, handle = self._handle, offset = new_offset, strides = new_stride) 
+        return out 
         ### END YOUR SOLUTION
 
     def __setitem__(self, idxs, other):
@@ -475,7 +513,34 @@ class NDArray:
     def tanh(self):
         out = NDArray.make(self.shape, device=self.device)
         self.device.ewise_tanh(self.compact()._handle, out._handle)
-        return out
+        return out 
+    
+    def power(self, other): 
+        out = NDArray.make(self.shape, device=self.device) 
+        # return self.ewise_or_scalar(
+        #     other, self.device.ewise_power, self.device.scalar_power 
+        # ) 
+        self.device.scalar_power(self.compact()._handle, other, out._handle) 
+        return out 
+    
+    def divide(self, other): 
+        '''
+        out = NDArray.make(self.shape, device=self.device)
+        self.device.ewise_div(self.compact()._handle, other.compact()._handle, out._handle) 
+        ''' 
+        
+        '''
+        return out 
+        ''' 
+        
+        return self.ewise_or_scalar(
+            other, self.device.ewise_div, self.device.scalar_div
+        ) 
+    
+    def negative(self): 
+        out = NDArray.make(self.shape, device=self.device) 
+        self.device.scalar_mul(self.compact()._handle, -1, out._handle) 
+        return out 
 
     ### Matrix multiplication
     def __matmul__(self, other):
@@ -573,7 +638,18 @@ class NDArray:
         Note: compact() before returning.
         """
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        newshape = list(self.shape) 
+        newstrides = list(self.strides) 
+        if isinstance(axes, int): 
+            axes = (axes,) 
+        for axis in axes: 
+            newstrides[axis] = -self.strides[axis] 
+        newoffset = 0 
+        for axis in axes: 
+            newoffset += (self.shape[axis] - 1) * self.strides[axis] 
+        output = NDArray.make(tuple(newshape), device = self.device, handle = self._handle, offset = newoffset, strides = tuple(newstrides)) 
+        output = output.compact() 
+        return output 
         ### END YOUR SOLUTION
 
     def pad(self, axes):
@@ -583,7 +659,22 @@ class NDArray:
         axes = ( (0, 0), (1, 1), (0, 0)) pads the middle axis with a 0 on the left and right side.
         """
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        new_shape = tuple(
+            self.shape[i] + axes[i][0] + axes[i][1] for i in range(len(self.shape))
+        )
+
+        # Create a new array with the new shape, initialized with zeros
+        padded_array = NDArray(np.zeros(new_shape, dtype=self.dtype), device = self.device) 
+
+        # Compute slices for placing the original array into the padded array
+        slices = tuple(
+            slice(axes[i][0], axes[i][0] + self.shape[i]) for i in range(len(self.shape))
+        )
+
+        # Insert the original array into the padded array
+        padded_array[slices] = self
+
+        return padded_array
         ### END YOUR SOLUTION
 
 def array(a, dtype="float32", device=None):
@@ -612,7 +703,10 @@ def reshape(array, new_shape):
 
 
 def maximum(a, b):
-    return a.maximum(b)
+    return a.maximum(b) 
+
+def max(a, axis = None, keepdims = False): 
+    return a.max(axis = axis, keepdims = keepdims) 
 
 
 def log(a):
@@ -630,6 +724,27 @@ def tanh(a):
 def sum(a, axis=None, keepdims=False):
     return a.sum(axis=axis, keepdims=keepdims)
 
+def summation(a, axis = None, keepdims = False): 
+    return a.sum(axis = axis, keepdims = keepdims) 
 
 def flip(a, axes):
-    return a.flip(axes)
+    return a.flip(axes) 
+
+def power(a, b): 
+    return a.power(b) 
+
+def divide(a, b): 
+    return a.divide(b) 
+
+def negative(a): 
+    return a.negative() 
+
+def transpose(a, axes=None): 
+    if axes == None: 
+        axes = tuple(range(len(a.shape))) 
+        axes = axes[::-1] 
+        assert False 
+    return a.permute(axes) 
+
+def exp(a): 
+    return a.exp() 
