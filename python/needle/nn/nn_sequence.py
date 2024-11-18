@@ -238,11 +238,10 @@ class Embedding(Module):
         bs, seq_len, diminput = x.shape 
         # singleout = [self.weight[i] for i in range(seq_len)] 
         uni = init.arange(start = 0, stop = seq_len, step = 1, device = x.device, dtype = x.dtype) 
-        uni = uni.reshape((1, seq_len, 1)) 
         uni = init.one_hot(self.num_embeddings, uni, dtype = x.dtype, device = x.device) # (1, seq_len, num_embeddings) 
         singleout = ops.matmul(uni, self.weight) # (1, seq_len, embedding_dim) 
         # singleout = ops.stack(singleout, axis = 0) # (seq_len, embedding_dim) 
-        # singleout = singleout.reshape((1, seq_len, self.embedding_dim)) 
+        singleout = singleout.reshape((1, seq_len, self.embedding_dim)) 
         singleout = ops.broadcast_to(singleout, (bs, seq_len, self.embedding_dim)) 
         return singleout 
         ### END YOUR SOLUTION
