@@ -324,8 +324,8 @@ class Transformer(Module):
         self.batch_first = batch_first
 
         ### BEGIN YOUR SOLUTION
-        self.embedding = Embedding(num_embeddings = sequence_len, embedding_dim = embedding_size, device = device, dtype = dtype) 
-        self.pos_embedding = init.arange(start = 0, stop = sequence_len, device = device, dtype = dtype) 
+        self.pos = Embedding(num_embeddings = sequence_len, embedding_dim = embedding_size, device = device, dtype = dtype) 
+        # self.pos_embedding = init.arange(start = 0, stop = sequence_len, device = device, dtype = dtype) 
         self.transformerlayers = [] 
         for i in range(num_layers): 
             self.transformerlayers.append(TransformerLayer(embedding_size, num_head, dim_head, hidden_size, device = device, dtype = dtype, dropout = dropout, causal = causal)) 
@@ -341,8 +341,8 @@ class Transformer(Module):
 
         ### BEGIN YOUR SOLUTION 
         # x = x.transpose() 
-        print("x shape {} h shape {}".format(x.shape, h.shape)) 
-        x = self.embedding(x) 
+        # print("x shape {} h shape {}".format(x.shape, h.shape)) 
+        x = x + self.pos(x) 
         print("x shape {} pos shape {}".format(x.shape, self.pos_embedding)) 
         x = x + self.pos_embedding.reshape((1, x.shape[1], 1)).broadcast_to(x.shape) 
         for layer in self.transformerlayers: 

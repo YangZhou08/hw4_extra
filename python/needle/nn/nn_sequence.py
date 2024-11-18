@@ -227,11 +227,17 @@ class Embedding(Module):
         output of shape (seq_len, bs, embedding_dim)
         """
         ### BEGIN YOUR SOLUTION 
-        print("x shape {}".format(x.shape)) 
-        onehot = init.one_hot(self.num_embeddings, x, dtype = x.dtype, device = x.device) 
+        # print("x shape {}".format(x.shape)) 
+        # onehot = init.one_hot(self.num_embeddings, x, dtype = x.dtype, device = x.device) 
         # return ops.matmul(onehot, self.weight) 
-        print("onehot shape {}, weight shape {}".format(onehot.shape, self.weight.shape)) 
-        onehot = onehot.reshape((onehot.shape[0] * onehot.shape[1] * onehot.shape[2], onehot.shape[3])) 
-        output = ops.matmul(onehot, self.weight.transpose()) 
-        return output.reshape((x.shape[0], x.shape[1], onehot.shape[2], self.embedding_dim)) 
+        # print("onehot shape {}, weight shape {}".format(onehot.shape, self.weight.shape)) 
+        # onehot = onehot.reshape((onehot.shape[0] * onehot.shape[1] * onehot.shape[2], onehot.shape[3])) 
+        # output = ops.matmul(onehot, self.weight.transpose()) 
+        # return output.reshape((x.shape[0], x.shape[1], onehot.shape[2], self.embedding_dim)) 
+        seq_len, bs = x.shape 
+        singleout = [self.weight[i] for i in range(seq_len)] 
+        singleout = ops.stack(singleout, axis = 0) # (seq_len, embedding_dim) 
+        singleout = singleout.reshape((1, seq_len, self.embedding_dim)) 
+        singleout = ops.broadcast_to(singleout, (bs, seq_len, self.embedding_dim)) 
+        return singleout 
         ### END YOUR SOLUTION
