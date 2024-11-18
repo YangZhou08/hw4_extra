@@ -183,12 +183,13 @@ class LayerNorm1d(Module):
     def forward(self, x: Tensor) -> Tensor:
         ### BEGIN YOUR SOLUTION
         mean = ops.summation(x, axes = (1,)) / x.shape[1] 
-        mean = ops.broadcast_to(ops.reshape(mean, (x.shape[0], 1)), x.shape) 
+        print("shapeone {} oneshape {}".format((x.shape[0], 1), x.shape)) 
+        mean = ops.broadcast_to(mean.reshape((x.shape[0], 1)), x.shape) 
         # print(mean.shape) 
-        power = init.ones_like(x, device = x.device) * 2 
-        variance = ops.summation(ops.power(x - mean, power), axes = (1,)) / (x.shape[1]) 
-        power = init.ones_like(variance, device = variance.device) * 0.5 
-        std = ops.power(variance + self.eps, power) 
+        # power = init.ones_like(x, device = x.device) * 2 
+        variance = ops.summation(ops.power_scalar(x - mean, 2), axes = (1,)) / (x.shape[1]) 
+        # power = init.ones_like(variance, device = variance.device) * 0.5 
+        std = ops.power_scalar(variance + self.eps, 0.5) 
         std = ops.broadcast_to(ops.reshape(std, (x.shape[0], 1)), x.shape) 
         intermediates = (x - mean) / std 
         # print(variance.shape) 
