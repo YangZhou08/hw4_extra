@@ -110,7 +110,7 @@ class MultiHeadAttention(Module):
         ### BEGIN YOUR SOLUTION
         product = self.matmul(q, k) / math.sqrt(q_dim) 
         if self.causal: 
-            mask = self.create_causal_mask(queries_len, keys_values_len, self.device) 
+            mask = self.create_causal_mask(queries_len, keys_values_len, self.device).broadcast_to(product.shape) 
             product = product + mask 
         probs = self.softmax(product) # (batch_size, num_head, queries_len, keys_values_len) 
         probs = self.dropout(probs) 
