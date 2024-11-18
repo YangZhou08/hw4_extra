@@ -326,7 +326,9 @@ class Transformer(Module):
         ### BEGIN YOUR SOLUTION
         self.embedding = Embedding(num_embeddings = sequence_len, embedding_dim = embedding_size, device = device, dtype = dtype) 
         self.pos_embedding = init.arange(start = 0, end = sequence_len, device = device, dtype = dtype) 
-        
+        self.transformerlayers = [] 
+        for i in range(num_layers): 
+            self.transformerlayers.append(TransformerLayer(embedding_size, num_head, dim_head, hidden_size, device = device, dtype = dtype, dropout = dropout, causal = causal)) 
         ### END YOUR SOLUTION
 
     def forward(
@@ -338,7 +340,10 @@ class Transformer(Module):
             x = ops.transpose(x, axes=(0, 1))
 
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        x = self.embedding(x) 
+        x = x + self.pos_embedding.reshape((1, x.shape[1], 1)).broadcast_to(x.shape) 
+        for layer in self.transformerlayers: 
+            x = layer(x) 
         ### END YOUR SOLUTION
 
         if not self.batch_first:
