@@ -108,7 +108,7 @@ class MultiHeadAttention(Module):
         probs = None
 
         ### BEGIN YOUR SOLUTION
-        product = self.matmul(q, k.transpose((0, 1, 3, 2))) / math.sqrt(q_dim) 
+        product = self.matmul(q, k) / math.sqrt(q_dim) 
         if self.causal: 
             mask = self.create_causal_mask(queries_len, keys_values_len, self.device) 
             product = product + mask 
