@@ -232,6 +232,7 @@ class AttentionLayer(Module):
         x = x.transpose((1, 2)).reshape((batch_size, queries_len, self.num_head * self.dim_head)).reshape((batch_size * queries_len, self.num_head * self.dim_head)) 
         
         x = self.out_projection(x) 
+        x = x.reshape((batch_size, queries_len, self.out_features)) 
         result = x 
         ### END YOUR SOLUTION
 
