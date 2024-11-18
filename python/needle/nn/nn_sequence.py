@@ -234,7 +234,8 @@ class Embedding(Module):
         # onehot = onehot.reshape((onehot.shape[0] * onehot.shape[1] * onehot.shape[2], onehot.shape[3])) 
         # output = ops.matmul(onehot, self.weight.transpose()) 
         # return output.reshape((x.shape[0], x.shape[1], onehot.shape[2], self.embedding_dim)) 
-        seq_len, bs = x.shape 
+        # seq_len, bs = x.shape 
+        bs, seq_len, diminput = x.shape 
         singleout = [self.weight[i] for i in range(seq_len)] 
         singleout = ops.stack(singleout, axis = 0) # (seq_len, embedding_dim) 
         singleout = singleout.reshape((1, seq_len, self.embedding_dim)) 
