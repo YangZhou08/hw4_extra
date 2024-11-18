@@ -117,7 +117,7 @@ class MultiHeadAttention(Module):
         
         print("probs shape {} v shape {}".format(probs.shape, v.shape)) 
         
-        result = self.matmul(probs, v) 
+        result = self.matmul(probs, v.transpose(2, 3)) 
         ### END YOUR SOLUTION
 
         return result, probs
