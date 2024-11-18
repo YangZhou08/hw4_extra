@@ -260,7 +260,7 @@ class TransformerLayer(Module):
         self.dtype = dtype
 
         ### BEGIN YOUR SOLUTION
-        self.attn = AttentionLayer(q_features, num_head, dim_head, device = device, dtype = dtype, causal = causal) 
+        self.attn = AttentionLayer(q_features, num_head, dim_head, device = device, dtype = dtype, causal = causal, dropout = dropout) 
         self.norm1 = LayerNorm1d(q_features, device = device, dtype = dtype) 
         self.fc1 = Linear(q_features, hidden_size, device = device, dtype = dtype, bias = True) 
         self.fc2 = Linear(hidden_size, q_features, device = device, dtype = dtype, bias = True) 
@@ -324,7 +324,9 @@ class Transformer(Module):
         self.batch_first = batch_first
 
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        self.embedding = Embedding(num_embeddings = sequence_len, embedding_dim = embedding_size, device = device, dtype = dtype) 
+        self.pos_embedding = init.arange(start = 0, end = sequence_len, device = device, dtype = dtype) 
+        
         ### END YOUR SOLUTION
 
     def forward(
