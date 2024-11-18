@@ -343,8 +343,8 @@ class Transformer(Module):
         # x = x.transpose() 
         # print("x shape {} h shape {}".format(x.shape, h.shape)) 
         x = x + self.pos(x) 
-        print("x shape {} pos shape {}".format(x.shape, self.pos_embedding)) 
-        x = x + self.pos_embedding.reshape((1, x.shape[1], 1)).broadcast_to(x.shape) 
+        # print("x shape {} pos shape {}".format(x.shape, self.pos_embedding)) 
+        # x = x + self.pos_embedding.reshape((1, x.shape[1], 1)).broadcast_to(x.shape) 
         for layer in self.transformerlayers: 
             x = layer(x) 
         ### END YOUR SOLUTION
