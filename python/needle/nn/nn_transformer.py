@@ -325,7 +325,7 @@ class Transformer(Module):
 
         ### BEGIN YOUR SOLUTION
         self.embedding = Embedding(num_embeddings = sequence_len, embedding_dim = embedding_size, device = device, dtype = dtype) 
-        self.pos_embedding = init.arange(start = 0, end = sequence_len, device = device, dtype = dtype) 
+        self.pos_embedding = init.arange(start = 0, stop = sequence_len, device = device, dtype = dtype) 
         self.transformerlayers = [] 
         for i in range(num_layers): 
             self.transformerlayers.append(TransformerLayer(embedding_size, num_head, dim_head, hidden_size, device = device, dtype = dtype, dropout = dropout, causal = causal)) 
