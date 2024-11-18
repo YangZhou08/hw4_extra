@@ -226,7 +226,8 @@ class Embedding(Module):
         Output:
         output of shape (seq_len, bs, embedding_dim)
         """
-        ### BEGIN YOUR SOLUTION
+        ### BEGIN YOUR SOLUTION 
+        print("x shape {}".format(x.shape)) 
         onehot = init.one_hot(self.num_embeddings, x, dtype = x.dtype, device = x.device) 
         # return ops.matmul(onehot, self.weight) 
         print("onehot shape {}, weight shape {}".format(onehot.shape, self.weight.shape)) 
